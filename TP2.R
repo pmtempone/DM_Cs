@@ -7,7 +7,11 @@ library(dplyr)
 library(FactoMineR)
 if (!require("RANN")) install.packages("RANN") ## Loading required package: RANN 
 library(RANN)
-
+library(ggplot2)
+library(dplyr)
+library(broom)
+library(psych)
+library(dbscan)
 ---#punto 1----
 
 glx_tp2 <- cbind(glx.uso[,"Nr"] ,as.data.frame(norm_glx_esp),(glx.uso %>% select(S280MAG,BjMAG,Rmag,ApDRmag,Mcz)))
@@ -21,8 +25,16 @@ glx.dist <- dist(scale(glx_uso_tp2[,-1]))
 glx.clus <- hclust(glx.dist) 
 plot( as.dendrogram( glx.clus ), leaflab="none", main="Cluster Jerárquico") 
 
+#optimos k
 
+kclusts <- data.frame(k=1:8) %>% group_by(k) %>% do(kclust=kmeans(glx.dist, .$k))
+clusters <- kclusts %>% group_by(k) %>% do(tidy(.$kclust[[1]]))
 
+assignments <- kclusts %>% group_by(k) %>% do(augment(.$kclust[[1]], glx_uso_tp2[,-1]))
+
+clusterings <- kclusts %>% group_by(k) %>% do(glance(.$kclust[[1]]))
+
+ggplot(clusterings, aes(k, tot.withinss)) + geom_line() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + theme_bw()
 #entre 3 y 4 clusters
 #cluster kmeans
 
@@ -75,3 +87,39 @@ clusplot(pam.pers)
 
 #calidad de cluster, distancia cofenetica
 cor(dist(dat.nrm), cophenetic(dat.clus)) ## [1] 0.9250305 cor(dist(dat.r1.nrm), cophenetic(dat.r1.clus)) ## [1] 0.9030483
+
+
+#test dbscan
+
+## use the numeric variables in the iris dataset
+
+x <- as.matrix(glx_uso_tp2[,-1])
+
+## DBSCAN
+db <- dbscan(x, eps = .4)
+db
+## visualize results (noise is shown in black)
+pairs(x, col = db$cluster + 1L)
+
+## LOF (local outlier factor) 
+lof <- lof(x, k = 4)
+## larger bubbles in the visualization have a larger LOF
+pairs(x, cex = lof)
+
+## OPTICS
+opt <- optics(x, eps = 1, minPts = 4)
+opt
+
+## extract DBSCAN-like clustering 
+opt <- extractDBSCAN(opt, eps_cl = .4)
+
+## create a reachability plot (extracted DBSCAN clusters at eps_cl=.4 are colored)
+plot(opt)
+
+## plot the extracted DBSCAN clustering
+pairs(x, col = opt$cluster + 1L)
+
+## extract a hierarchical clustering using the Xi method (captures clusters of varying density)
+opt <- extractXi(opt, xi = .05)
+opt
+plot(opt)

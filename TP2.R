@@ -5,6 +5,8 @@ library(MASS)
 library(fpc)
 library(dplyr)
 library(FactoMineR)
+if (!require("RANN")) install.packages("RANN") ## Loading required package: RANN 
+library(RANN)
 
 ---#punto 1----
 
@@ -63,9 +65,13 @@ sum(pers.matrix.gower)
 pam.pers$silinfo$avg.width
 
 #medida de separacion de cluster: L* separacion es muy buena,L separacion media, no: cluster superpuestos, no estan separados
-#esto se explica xq el silhouette de 0.35 (no es bueno, pero tampoco malo)
+#esto se explica xq el silhouette de 0.33 (no es bueno, pero tampoco malo)
 pam.pers$isolation
 
 plot(silhouette(pam.pers), col = "red" ,border = NA)
 
 clusplot(pam.pers)
+
+
+#calidad de cluster, distancia cofenetica
+cor(dist(dat.nrm), cophenetic(dat.clus)) ## [1] 0.9250305 cor(dist(dat.r1.nrm), cophenetic(dat.r1.clus)) ## [1] 0.9030483

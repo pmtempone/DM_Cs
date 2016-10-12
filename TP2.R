@@ -4,6 +4,7 @@ library(cluster)
 library(MASS)
 library(fpc)
 library(dplyr)
+library(FactoMineR)
 
 ---#punto 1----
 
@@ -25,15 +26,17 @@ plot( as.dendrogram( glx.clus ), leaflab="none", main="Cluster Jerárquico")
 
 glx.kmeans <- kmeans(glx.dist, centers=4) 
 
+# salida grafica 
+plot(silhouette(glx.kmeans$cluster, glx.dist),col=3, border=NA)
 
 
 #matriz de distancia de gower
 
-pers.gower <- daisy(pers,metric = "gower",stand = TRUE)
+glx.gower <- daisy(glx_uso_tp2[,-1],metric = "gower",stand = TRUE)
 
-plot(hclust(pers.gower))
+plot(hclust(glx.gower))
 
-pam.pers <- pam(pers.gower,k=6,diss = TRUE) #ventaja de pam, ver prototipos
+pam.pers <- pam(glx.gower,k=4,diss = TRUE) #ventaja de pam, ver prototipos
 
 names(pam.pers)
 
@@ -41,7 +44,7 @@ pam.pers$clustering
 
 pam.pers$medoids #prototipos, devuelve el id
 
-pers[pam.pers$medoids,]
+glx_uso_tp2[pam.pers$medoids,-1]
 
 pers.medoids <- pam.pers$medoids[pam.pers$clustering] #obtengo el medoide de cada valor
 
@@ -49,7 +52,7 @@ pers.medoids <- pam.pers$medoids[pam.pers$clustering] #obtengo el medoide de cad
 
 #transformamos la matriz de gower (triangular) en una matriz cuadrada
 
-pers.matrix.gower <- as.matrix(pers.gower)[cbind(pers.medoids,names(pam.pers$clustering))] #cbind para formar un df de x e y
+pers.matrix.gower <- as.matrix(glx.gower)[cbind(pers.medoids,names(pam.pers$clustering))] #cbind para formar un df de x e y
 
 #sumamos valores de la matriz para tener valor aprox de suma de los errores
 
@@ -63,6 +66,6 @@ pam.pers$silinfo$avg.width
 #esto se explica xq el silhouette de 0.35 (no es bueno, pero tampoco malo)
 pam.pers$isolation
 
-plot(silhouette(pam.pers), col = "red")
+plot(silhouette(pam.pers), col = "red" ,border = NA)
 
 clusplot(pam.pers)

@@ -10,6 +10,23 @@ library(dplyr)
 glx_tp2 <- cbind(glx.uso[,"Nr"] ,as.data.frame(norm_glx_esp),(glx.uso %>% select(S280MAG,BjMAG,Rmag,ApDRmag,Mcz)))
 colnames(glx_tp2)[1] <- "Nr"
 
+glx_uso_tp2 <- read.csv("~/Documentos/Datamining_Ciencia/glx_uso.csv")
+
+#cluster jerarquico
+
+glx.dist <- dist(scale(glx_uso_tp2[,-1])) 
+glx.clus <- hclust(glx.dist) 
+plot( as.dendrogram( glx.clus ), leaflab="none", main="Cluster Jerárquico") 
+
+
+
+#entre 3 y 4 clusters
+#cluster kmeans
+
+glx.kmeans <- kmeans(glx.dist, centers=4) 
+
+
+
 #matriz de distancia de gower
 
 pers.gower <- daisy(pers,metric = "gower",stand = TRUE)

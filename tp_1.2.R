@@ -1,7 +1,7 @@
 library(reshape)
 library(base)
 #Levanto el dat
-t3 <- readLines("table3.dat")
+t3 <- readLines("http://www.mpia.de/COMBO/table3.dat")
 
 #Extraigo del dataset las variables necesarias. uso desplazamientos por campos para leer caracteres.
 

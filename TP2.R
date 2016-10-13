@@ -12,6 +12,8 @@ library(dplyr)
 library(broom)
 library(psych)
 library(dbscan)
+library(lattice)
+library(gridExtra)
 ---#punto 1----
 
 glx_tp2 <- cbind(glx.uso[,"Nr"] ,as.data.frame(norm_glx_esp),(glx.uso %>% select(S280MAG,BjMAG,Rmag,ApDRmag,Mcz)))
@@ -38,7 +40,7 @@ ggplot(clusterings, aes(k, tot.withinss)) + geom_line() + theme(panel.grid.major
 #entre 3 y 4 clusters
 #cluster kmeans
 
-glx.kmeans <- kmeans(glx.dist, centers=4) 
+glx.kmeans <- kmeans(glx.dist, centers=3) 
 
 # salida grafica 
 plot(silhouette(glx.kmeans$cluster, glx.dist),col=3, border=NA)
@@ -50,7 +52,7 @@ glx.gower <- daisy(glx_uso_tp2[,-1],metric = "gower",stand = TRUE)
 
 plot(hclust(glx.gower))
 
-pam.pers <- pam(glx.gower,k=4,diss = TRUE) #ventaja de pam, ver prototipos
+pam.pers <- pam(glx.gower,k=3,diss = TRUE) #ventaja de pam, ver prototipos
 
 names(pam.pers)
 
@@ -77,13 +79,28 @@ sum(pers.matrix.gower)
 pam.pers$silinfo$avg.width
 
 #medida de separacion de cluster: L* separacion es muy buena,L separacion media, no: cluster superpuestos, no estan separados
-#esto se explica xq el silhouette de 0.33 (no es bueno, pero tampoco malo)
+#esto se explica xq el silhouette de 0.4 (no es bueno, pero tampoco malo)
 pam.pers$isolation
 
 plot(silhouette(pam.pers), col = "red" ,border = NA)
 
-clusplot(pam.pers)
+clusplot(pam.pers) #tarda en generarse el grafico
 
+K <- 2:5
+pseudo.sse <- vector()
+silhou <- vector()
+for (i in seq_along(K)) {
+  pam.clust <- pam(glx.dist, diss = F, k = K[i])
+  pers.meds <- pam.clust$medoids[pam.clust$clustering]
+  m.pers.gower <- as.matrix(glx.dist)[cbind(pers.meds,names(pam.clust$clustering))]
+  
+  pseudo.sse[i] <- sum(m.pers.gower)
+  silhou[i] <- pam.clust$silinfo$avg.width
+}
+
+sse <- xyplot(pseudo.sse ~ as.factor(K),  type = 'l', xlab = NULL)
+sil <- barchart(silhou ~ as.factor(K), horizontal = F)
+grid.arrange(sse, sil)
 
 #calidad de cluster, distancia cofenetica
 cor(dist(dat.nrm), cophenetic(dat.clus)) ## [1] 0.9250305 cor(dist(dat.r1.nrm), cophenetic(dat.r1.clus)) ## [1] 0.9030483

@@ -60,6 +60,9 @@ pam.pers$clustering
 
 pam.pers$medoids #prototipos, devuelve el id
 
+
+
+
 glx_uso_tp2[pam.pers$medoids,-1]
 
 pers.medoids <- pam.pers$medoids[pam.pers$clustering] #obtengo el medoide de cada valor
@@ -104,8 +107,23 @@ grid.arrange(sse, sil)
 
 #calidad de cluster, distancia cofenetica
 cor(dist(dat.nrm), cophenetic(dat.clus)) ## [1] 0.9250305 cor(dist(dat.r1.nrm), cophenetic(dat.r1.clus)) ## [1] 0.9030483
+----#PAM----
+validacion.sse.pam <- 0
+validacion.silhouette.pam <- 0
+Ks <- 2:30
+for (i in 1:length(Ks)) {
+  pam.cluster <- pam(glx.dist, k =  Ks[i], diss = T)
+  pam.meds <- pam.cluster$medoids[pam.cluster$clustering]
+  m.pam.cluster <- as.matrix(glx.dist)[cbind(pam.meds,names(pam.cluster$clustering))]
+  
+  validacion.sse.pam[i] <-  sum(m.pam.cluster)
+  validacion.silhouette.pam[i] <- pam.cluster$silinfo$avg.width
+  print(i)
+}
 
-
+sse <- xyplot(validacion.sse.pam ~ as.factor(K),  type = 'l', xlab = NULL)
+sil <- barchart(validacion.silhouette.pam ~ as.factor(K), horizontal = F)
+grid.arrange(sse, sil)
 #test dbscan
 
 ## use the numeric variables in the iris dataset

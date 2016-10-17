@@ -1,5 +1,7 @@
 library(reshape)
 library(base)
+library(ggplot2)
+library(plotly)
 #Levanto el dat
 t3 <- readLines("http://www.mpia.de/COMBO/table3.dat")
 

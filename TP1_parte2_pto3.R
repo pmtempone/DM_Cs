@@ -38,7 +38,7 @@ galaxias <- as.data.frame(do.call('cbind', args = lista, quote = F))
 
 galaxias[,-7] <- apply(galaxias[,-7], 2, as.numeric) ; 
 rm(list = ls()[-2]) # convierto a numeric las variables
-
+remove(lista)
 
 # Me quedo unicamente con elementos de la clase galaxy
 

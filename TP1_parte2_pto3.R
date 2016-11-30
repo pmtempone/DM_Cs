@@ -139,7 +139,7 @@ grid.arrange(sse, sil)
 
 #se hace kmeans
 
-k.cluster.final <- kmeans(glx.uso_pt3.std, 4, nstart = 20)
+k.cluster.final <- kmeans(glx.uso_pt3.std, 3, nstart = 20)
 
 plot(silhouette(k.cluster.final$cluster, dist.m),col=3, border=NA)
 
@@ -147,7 +147,6 @@ plot(silhouette(k.cluster.final$cluster, dist.m),col=3, border=NA)
 #PAM no correr!
 
 glx.gower <- daisy(glx.uso_pt3.std,metric = "gower",stand = FALSE)
-
 galaxias_pt3.2 <- cbind(galaxias_pt3,cluster=k.cluster.final$cluster)
 
 p <- ggplot(galaxias_pt3.2, aes(x, y))

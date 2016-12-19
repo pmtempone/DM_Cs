@@ -146,8 +146,13 @@ rg.transitivity.barabasi <- array()
 rg.transitivity.erdos <- array()
 
 for(i in 1:1000){
+<<<<<<< HEAD
   rg.1 <- barabasi.game(723, power = 2.4, m=9, directed = F)
   rg.2 <- sample_gnm(723, 3336)
+=======
+  rg.1 <- barabasi.game(43, power = 2.4, m=8, directed = F)
+  rg.2 <- sample_gnm(43, 336)
+>>>>>>> d97c4314bb9aa1f5eecb70d5e4c65c100d08083c
   rg.transitivity.barabasi[i] <- mean(transitivity(rg.1, "local", isolates="zero"))
   rg.transitivity.erdos[i] <- mean(transitivity(rg.2, "local", isolates="zero"))
 }

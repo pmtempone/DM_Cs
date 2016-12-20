@@ -146,7 +146,7 @@ rg.transitivity.barabasi <- array()
 rg.transitivity.erdos <- array()
 
 for(i in 1:1000){
-  rg.1 <- barabasi.game(723, power = 2.4, m=9, directed = F)
+  rg.1 <- barabasi.game(723, power = 2, m=6, directed = F)
   rg.2 <- sample_gnm(723, 3336)
   rg.transitivity.barabasi[i] <- mean(transitivity(rg.1, "local", isolates="zero"))
   rg.transitivity.erdos[i] <- mean(transitivity(rg.2, "local", isolates="zero"))
@@ -164,3 +164,4 @@ abline( v = red.transitivity, col ="red", lwd= 2)
 table(red.transitivity > rg.transitivity.erdos)
 hist(rg.transitivity.erdos, xlim=c(0.0, 0.5), main = "coef. clustering, grafos al azar")
 abline( v = red.transitivity, col ="red", lwd= 2)
+

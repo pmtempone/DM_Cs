@@ -39,7 +39,7 @@ noruega_checkin_map_1
 
 
 noruega_checkin_map_2 <- ggmap(noruega_mapa_1) +
-  geom_point(aes(x = lon, y = lat, col = n),
+  geom_point(aes(x = lon, y = lat, col = log10(n)),
              alpha = 0.5,
              data = uniq_checks_noruega) +
   scale_color_gradient(low="blue", high="red")
@@ -50,7 +50,7 @@ noruega_checkin_map_2
 library(fossil)
 noruega_dist <- earth.dist(checkins_noruega[,4:3]) #ojo con la memoria!
 plot(hclust(noruega_dist))
-rusia_clusts <- cutree(hclust(rusia_dist), h = 20)
+rusia_clusts <- cutree(hclust(noruega_dist), h = 20)
 unique(rusia_clusts)
 checkins_rusia <- data.frame(checkins_rusia, geo_cluster = rusia_clusts)
 cluster_cons <- checkins_rusia %>% group_by(geo_cluster) %>%

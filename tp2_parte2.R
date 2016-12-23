@@ -45,13 +45,27 @@ noruega_checkin_map_2 <- ggmap(noruega_mapa_1) +
   scale_color_gradient(low="blue", high="red")
 noruega_checkin_map_2
 
-
-# install.packages("fossil")
+install.packages("fossil")
 library(fossil)
-noruega_dist <- earth.dist(checkins_noruega[,4:3]) #ojo con la memoria!
+noruega_dist <- earth.dist(uniq_checks_noruega[,1:2]) #ojo con la memoria!
 plot(hclust(noruega_dist))
-rusia_clusts <- cutree(hclust(noruega_dist), h = 20)
-unique(rusia_clusts)
-checkins_rusia <- data.frame(checkins_rusia, geo_cluster = rusia_clusts)
-cluster_cons <- checkins_rusia %>% group_by(geo_cluster) %>%
+noruega_dist <- cutree(hclust(noruega_dist), h = 20)
+unique(noruega_dist)
+uniq_checkins_noruega <- data.frame(uniq_checks_noruega, geo_cluster = noruega_dist)
+cluster_cons <- uniq_checkins_noruega %>% group_by(geo_cluster) %>%
   summarize(lat=mean(lat), lon=mean(lon))
+
+noruega_checkin_map_2 <- ggmap(noruega_mapa_1) +
+  geom_point(aes(x = lon, y = lat, col = geo_cluster),
+             alpha = 0.5,
+             data = cluster_cons) +
+  scale_color_gradient(low="blue", high="red")
+noruega_checkin_map_2
+
+
+noruega_checkin_map_2 <- ggmap(noruega_mapa_1) +
+  geom_point(aes(x = lon, y = lat, col = geo_cluster),
+             alpha = 0.5,
+             data = uniq_checkins_noruega) +
+  scale_color_gradient(low="blue", high="red")
+noruega_checkin_map_2

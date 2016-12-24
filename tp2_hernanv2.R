@@ -147,7 +147,7 @@ centr_degree(red_noruega, mode="in", normalized=T)
 
 # Mundos pequeños #######
 
-red_noruega.plf <- power.law.fit(degree(red_noruega.1))
+red_noruega.plf <- power.law.fit(degree(red_noruega))
 
 red_noruega.plf$xmin
 red_noruega.plf$alpha
@@ -177,4 +177,16 @@ hist(rg.transitivity.erdos, xlim=c(0.0, 0.2), main = "coef. clustering, grafos a
 abline( v = red.transitivity, col ="red", lwd= 2)
 
 
+# Intermediación
 
+View(data.frame( betweenness((red_noruega))))
+hist(betweenness((red_noruega)))
+
+# Cercania
+View(data.frame( closeness(red_noruega)) )
+hist(closeness((red_noruega)))
+
+
+# Centralidad de autovectores
+View(data.frame( eigen_centrality(red_noruega)$vector) )
+hist(eigen_centrality(red_noruega)$vector)

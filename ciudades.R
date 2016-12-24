@@ -20,7 +20,7 @@ pos_noruega.2$textAddress <- mapply(FUN = function(lon, lat) revgeocode(c(lon, l
 
 save(pos_noruega.2, file='C:/Users/Pablo/Google Drive/TP DM Tecno/pos-noruega-2.rda')
 
-
+checkins_noruega.2 <- inner_join(checkins_noruega.2,ciudades)
 ciudades <- rbind(pos_noruega_,pos_noruega.2,pos_noruega.1[,1:4])
 
 # Funcion para extraer lugares
@@ -42,3 +42,17 @@ a <- extraer.ciudad(ciudades$textAddress)
 ciudades <- data.frame(ciudades,ciudad=a)
 
 save(ciudades,file='C:/Users/Pablo/Google Drive/TP DM Tecno/ciudades.rda')
+load('C:/Users/Pablo/Google Drive/TP DM Tecno/ciudades.rda')
+
+nor_checks_cities <- inner_join(checkins_noruega,ciudades,by=c("lat","lon"))
+
+hist(nor_checks_cities$ciudad)
+
+cant_x_ciudad <- nor_checks_cities %>% group_by(ciudad) %>% summarise(total.count=n())
+
+g <- ggplot(head(sort(cant_x_ciudad),n=10), aes(total.count))
+g + geom_bar()
+
+newdata <- cant_x_ciudad[order(cant_x_ciudad$total.count,decreasing=TRUE),] 
+g <- ggplot(head(newdata,n=10), aes(x=ciudad,y=total.count))
+g + geom_bar(stat = "identity",aes(fill = ciudad))

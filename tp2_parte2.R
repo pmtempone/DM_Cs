@@ -46,6 +46,30 @@ noruega_checkin_map_2 <- ggmap(noruega_mapa_1) +
 noruega_checkin_map_2
 
 
+cantidades_nor <-  checkins_noruega %>%  
+  mutate(cantidad=as.numeric(loc_id)) %>%  
+  group_by(lon,lat) %>%
+  summarise(total.count=n(), 
+            count=sum(is.na(cantidad)))
+
+
+mapPoints <- ggmap(noruega_mapa_1) + geom_point(aes(x = lon, y = lat, size = count,col=count), data = cantidades_nor, alpha = .5)
+
+mapPoints
+
+
+m <- get_map("Norway",zoom=4,maptype="toner",source="stamen")
+ggmap(m) + geom_point(aes(x=lon,y=lat,color=count),data=cantidades_nor) + geom_point(size=3,alpha=0.3)
+g <- ggmap(m)
+g <- g+stat_density2d(aes(x = lon, y = lat, fill=..level..), data=checkins_noruega,geom="polygon", alpha=0.2)
+g + scale_fill_gradient(low = "yellow", high = "red")
+
+m <- get_map("Norway",zoom=6)
+ggmap(m) + geom_point(aes(x=lon,y=lat,color=count,size = count),data=cantidades_nor) + geom_point(size=3,alpha=0.3)
+g <- ggmap(m)+stat_density2d(aes(x = lon, y = lat, fill=..level..), data=cantidades_nor,geom="polygon", alpha=0.2)
+
+g
+
 # install.packages("fossil")
 library(fossil)
 noruega_dist <- earth.dist(checkins_noruega[,4:3]) #ojo con la memoria!
@@ -55,3 +79,4 @@ unique(rusia_clusts)
 checkins_rusia <- data.frame(checkins_rusia, geo_cluster = rusia_clusts)
 cluster_cons <- checkins_rusia %>% group_by(geo_cluster) %>%
   summarize(lat=mean(lat), lon=mean(lon))
+
